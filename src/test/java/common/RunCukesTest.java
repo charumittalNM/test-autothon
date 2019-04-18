@@ -6,7 +6,7 @@ import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "test/features", plugin = { "pretty",
+@CucumberOptions(features = "src/test/java/features", plugin = { "pretty",
 "html:target/cucumber-html-report" }, glue = { "WeatherDefinations" }, tags = {})
 public class RunCukesTest {
 
