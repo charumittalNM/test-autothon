@@ -27,12 +27,12 @@ public class WeatherDefinations {
 	public void verifyWeatherDatapassCityName(String arg1,String arg2) throws Throwable {
 		InputStream input = new FileInputStream("src/test/resources/config/config.properties");
 		prop.load(input);
-		
+
 		if(arg2.equalsIgnoreCase("city"))
 		{
 			url = prop.getProperty("cityNameUrl")+arg1+prop.getProperty("appid");
 			System.out.println("URL: "+url);
-			urlData = arg1; 
+			urlData = arg1;
 		}
 		else if(arg2.equalsIgnoreCase("id"))
 		{
@@ -40,31 +40,46 @@ public class WeatherDefinations {
 			System.out.println("URL: "+url);
 			urlData = arg1;
 		}
-		else if(arg2.equalsIgnoreCase("cityZipCode"))
+		else if(arg2.equalsIgnoreCase("zip"))
 		{
 			url = prop.getProperty("cityZipCodeUrl")+arg1+prop.getProperty("appid");
 			System.out.println("URL: "+url);
 			urlData = arg1;
-		}			
+		}
 	}
 
 	@Given("^Hit WeatherData api url$")
-	public void hit_WeatherData_Api() throws Throwable {		
+	public void hit_WeatherData_Api() throws Throwable {
 		RequestSpecification httpRequest = RestAssured.given();
 		response = httpRequest.get(url);
 	}
 
 	@Given("^Verify the weatherData response$")
-	public void verify_WeatherData_Reponse(DataTable expectedReponseData) throws Throwable {		
-		jsonConversionUtil = new JsonConversionUtil();	
+	public void verify_WeatherData_Reponse(DataTable expectedReponseData) throws Throwable {
+		jsonConversionUtil = new JsonConversionUtil();
 		String responseBody = response.getBody().asString();
 		System.out.println("Response Body is =>  " + responseBody);
 
-		for (Map<String, String> data : expectedReponseData.asMaps(String.class, String.class)) {			 
+		for (Map<String, String> data : expectedReponseData.asMaps(String.class, String.class)) {
 			expectedStatusCode = Integer.parseInt(data.get("StatusCode"));
-			expectedTemp = Double.valueOf(data.get("temp"));
-			expectedtemp_min = Double.valueOf(data.get("temp_min"));
-			expectedtemp_max = Double.valueOf(data.get("temp_max"));
+			if(!data.get("temp").isEmpty()) {
+				expectedTemp = Double.valueOf(data.get("temp"));
+			}
+			else {
+				expectedTemp = 0.0;
+			}
+			if(!data.get("temp_min").isEmpty()) {
+				expectedtemp_min = Double.valueOf(data.get("temp_min"));
+			}
+			else {
+				expectedtemp_min = 0.0;
+			}
+			if(!data.get("temp_max").isEmpty()) {
+				expectedtemp_max = Double.valueOf(data.get("temp_max"));
+			}
+			else {
+				expectedtemp_max = 0.0;
+			}
 		}
 
 		responseJsonObject = jsonConversionUtil.getJsonObject(responseBody);
