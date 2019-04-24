@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Properties;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.testng.ITestContext;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import common.JsonConversionUtil;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
@@ -23,12 +27,18 @@ public class WeatherDefinations {
 	private JSONObject responseJsonObject;
 	private Properties prop = new Properties();
 
-	@Given("^pass \"([^\"]*)\" for \"([^\"]*)\" weather data$")
-	public void verifyWeatherDatapassCityName(String arg1,String arg2) throws Throwable {
+	
+	@Given("^pass weather data$")
+	
+	public void getname(DataTable arg2) throws Throwable {
 		InputStream input = new FileInputStream("src/test/resources/config/config.properties");
 		prop.load(input);
 		
-		if(arg2.equalsIgnoreCase("city"))
+		for (Map<String, String> data : arg2.asMaps(String.class, String.class)) {			 
+			System.out.println(data.get("city123"));
+		}
+		
+		/*if(arg2.equalsIgnoreCase("city"))
 		{
 			url = prop.getProperty("cityNameUrl")+arg1+prop.getProperty("appid");
 			System.out.println("URL: "+url);
@@ -45,7 +55,7 @@ public class WeatherDefinations {
 			url = prop.getProperty("cityZipCodeUrl")+arg1+prop.getProperty("appid");
 			System.out.println("URL: "+url);
 			urlData = arg1;
-		}			
+		}		*/	
 	}
 
 	@Given("^Hit WeatherData api url$")
@@ -73,6 +83,12 @@ public class WeatherDefinations {
 		Assert.assertEquals(expectedtemp_min, responseJsonObject.getJSONObject("main").get("temp_min"));
 		Assert.assertEquals(expectedtemp_max, responseJsonObject.getJSONObject("main").get("temp_max"));
 	}
-
+	
+	
+	@BeforeClass
+	public void setupClassName(ITestContext context) {
+	context.getCurrentXmlTest().getSuite().setDataProviderThreadCount(5);
+	//context.getCurrentXmlTest().getSuite().setPreserveOrder(false);
+	}
 
 }
